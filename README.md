@@ -4,6 +4,8 @@ hello everyone, i struggled with beets and figured i'd share a bit of informatio
 most of the configs and files above are well commented. So be sure to read through those first. THIS IS STILL IN TESTING PHASE, but is somewhat working without tearing up your library this way.
 I generally use lidarr arr-scripts to manage my music library. Figured I'd show some of my configs here to collab possibly too. 
 
+Note: things that say (redacted) must be replaced with your own api keys.
+
 Discord if you need help: https://discord.gg/9xzTtCxauJ
 
 feel free to open an issue with questions.
