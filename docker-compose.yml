@@ -1,0 +1,33 @@
+# Beets software for music library management.
+# Metadata, Lyrics, CoverArt, Create playlists, smart playlists, ratings, and loads more able to do
+
+---
+version: "2.1"
+services:
+  beets:
+    image: lscr.io/linuxserver/beets:nightly  # think latest is 1.6.0 and nightly is newer, maybe less issues idk
+    container_name: beets
+    environment:
+      - PUID=1000
+      - PGID=1006
+      - TZ=America/New_York
+    volumes:
+      - /docker-containers/beets:/config
+      - /Music/beetsplaylist:/bpg
+      - /Music/Testing:/music
+      # - /unsorted/beets:/music
+      - /unsorted/beets:/downloads
+    # seems like the easiest way to fix problems just install on each first run.. this fixed discogs but not wlg
+    # seems to be crashing about it tho
+    command: "/config/docker-compose-post-commands.sh" # Oh yeah, this was how i'm importing newest version of plugins, but doesn't work properly. let me upload too
+    ports:
+      - 8337:8337
+    # restart: unless-stopped # disabled to see if something shows
+    stdin_open: true    # to attach to containers
+    tty: true           # also used to attach to containers
+#    network_mode: service:wireguard     # To run through vpn service container, in turn UI port must be forwarded inside vpn. No local access unless otherwise defined
+    networks:           # Specify network for container
+      - homelab
+networks:    # I got everythign reversed proxied here. so easier to connect to some panel they offer.
+  homelab:
+    external: true      # This option causes compose to join the above network instead of making a _default one (supposedly)
