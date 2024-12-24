@@ -1,0 +1,230 @@
+# beets config file    # removed wlg from below for now see something
+plugins: fetchart embedart convert scrub replaygain lastgenre chroma web lyrics deezer spotify discogs smartplaylist albumtypes lastimport popularity mbsync
+pluginpath:       # manually importing with docker 'command' inside container and installing with bash script
+    /config/plugins-git/beets-popularity/beetsplug
+    # /config/plugins-git/whatlastgenre/plugin/beets/beetsplug
+directory: /music
+library: /config/musiclibrary.blb
+art_filename: coverart
+threaded: yes
+per_disc_numbering: yes
+original_date: yes # set to yes to have year month and day fields set to release date
+sort_case_insensitive: yes   # default: yes
+id3v23: no
+asciify_paths: true
+
+match:
+    strong_rec_thresh: 0.10 # 0.04
+    medium_rec_thresh: 0.25 # 0.25
+    rec_gap_thresh: 0.25 # 0.25
+    max_rec:
+        missing_tracks: medium # medium
+        unmatched_tracks: medium # medium
+        track_length: medium
+        track_index: medium
+    distance_weights:
+        source: 2.0 # 2.0
+        artist: 3.0 # 3.0
+        album: 3.0 # 3.0
+        media: 1.0 # 1.0
+        mediums: 1.0 # 1.0
+        year: 1.0 # 1.0
+        country: 0.5 # 0.5
+        label: 0.5 # 0.5
+        catalognum: 0.5 # 0.5
+        albumdisambig: 0.5 # 0.5
+        album_id: 5.0 # 5.0
+        tracks: 2.0 # 2.0
+        missing_tracks: 0.9 # 0.9
+        unmatched_tracks: 0.6 # 0.6
+        track_title: 3.0 # 3.0
+        track_artist: 2.0 # 2.0
+        track_index: 1.0 # 1.0
+        track_length: 2.0 # 2.0
+        track_id: 5.0 # 5.0
+    preferred:
+        countries: [] # []
+        media: [] # []
+        original_year: no # no
+    ignored: ['missing_tracks', 'track_length', 'unmatched_tracks', 'track_index'] # []
+    required: [] # []
+    ignored_media: [] # []
+    ignore_data_tracks: yes # yes
+    ignore_video_tracks: yes # yes
+    track_length_grace: 10 # 10
+    track_length_max: 30 # 30
+
+paths:
+    # lidarr Standard = {Album Title} ({Release Year})/{Artist Name}-{Album Title}-{track:00}-{Track Title}-[{MediaInfo AudioBitRate}]-{Release Group}
+    # lidarr Multi = {Album Title} ({Release Year})/CD{medium:00}/{Artist Name}-{Album Title}-CD{medium:00}-{track:00}-{Track Title}-[{MediaInfo AudioBitRate}]-{Release Group}
+    # Lidarr Artist Folder Name = {Artist Name}
+    default: $albumartist/$album ($original_year)/$albumartist-$album-$disc$track-$title-[$bitrate]
+    singleton: $albumartist/$title ($original_year)/$albumartist-$disc$track-title-[$bitrate]
+    comp: Various Artists/$album ($original_year)/$albumartist-$album-$disc$track-$title-[$bitrate]
+    albumtype_soundtrack: Various Artists/$album ($original_year)/$albumartist-$album-$disc$track-$title-[$bitrate]
+
+acoustid:
+    apikey: (redacted)
+
+albumtypes:
+    types:
+        - ep: 'EP'
+        - single: 'Single'
+        - soundtrack: 'OST'
+        - live: 'Live'
+        - compilation: 'Anthology'
+        - remix: 'Remix'
+    ignore_va: compilation
+    bracket: '[]'
+
+chroma:
+    auto: no
+
+convert:
+    auto: no
+    ffmpeg: /usr/bin/ffmpeg
+    opts: -ab 320k -ac 2 -ar 48000
+    max_bitrate: 320
+    threads: 1
+
+deezer:         # https://beets.readthedocs.io/en/latest/plugins/deezer.html
+    source_weight: 0.0
+
+discogs:
+    source_weight: 0.5
+    
+embedart:
+    auto: yes
+
+import:
+    write: yes
+    copy: no
+    move: no
+    autotag: yes # default yes
+    resume: ask  # ask whether skip asis # disabling does nothing
+    incremental: no  # enable if you don't want to overwrite same file
+    from_scratch: no     # default: no
+    quiet: no    # default: no, controlling whether to ask for a manual decision from the user when the importer is unsure how to proceed
+    quiet_fallback: skip  # Either skip (default) or asis, specifying what should happen in quiet mode when there is no strong recommendation.
+    timid: no   # asks for confirmation on every autotagging match, even the ones that seem very close.
+    duplicate_action: skip
+    log: /config/beet.log
+    languages: ['en']
+    group_albums: no
+    detail: yes
+
+fetchart:
+    auto: yes
+
+lastfm:
+    user: sickprod
+    api_key: (redacted)
+
+lastgenre:  # https://beets.readthedocs.io/en/latest/plugins/lastgenre.html#lastgenre-plugin
+    auto: yes      # yes could cause issues with wlg running
+    count: 5
+    separator: '; '
+    source: track # default album, track will pull album and track genres
+    force: yes
+    min_weight: 5    # default 10
+    prefer_specific: yes   # yes prefers specifc to canonical and whitelist, no ig doesn't use those
+    # canonical: yes
+    canonical: /config/genre-tree.yaml    # able to use a path
+    whitelist: /config/genres-whitelist.txt
+
+lyrics:
+    fallback: ''
+    google_API_key:  (redacted)
+    google_engine_ID: (redacted)
+    auto: yes
+    sources: google genius tekstowo lrclib
+
+musicbrainz:        # https://beets.readthedocs.io/en/latest/reference/config.html#musicbrainz-options
+    source_weight: 0.0
+    enabled: yes
+    genres: no # default: no ; if set to yes will replace current genres using wlg for that # seemed with
+    external_ids:
+        discogs: yes
+        spotify: yes
+        bandcamp: yes
+        deezer: yes
+        tidal: yes
+
+replace:
+    '^\.': _
+    '[\x00-\x1f]': _
+    '[<>:"\?\*\|]': _
+    '[\xE8-\xEB]': e
+    '[\xEC-\xEF]': i
+    '[\xE2-\xE6]': a
+    '[\xF2-\xF6]': o
+    '[\xF8]': o
+    '\.$': _
+    '\s+$': ''
+
+replaygain:
+    auto: no
+
+scrub:
+    auto: yes
+
+smartplaylist:
+    auto: yes    # default: yes
+    relative_to: /music/Music-Library
+    playlist_dir: /bpg
+    forward_slash: no
+    playlists:
+        - name: Popular.m3u
+          query: 'popularity:60..'
+        - name: Popular-HipHop.m3u
+          query: ['popularity:55..', 'genre:Hip Hop']
+        - name: popular_rap.m3u
+          query: ['popularity:55..', 'genre:Rap']
+        - name: popular_rock.m3u
+          query: ['popularity:50..', 'genre:Rock']
+        - name: All.m3u
+          query: ''
+        - name: HipHopGenre.m3u
+          query: 'genre:Hip Hop'
+        - name: 'HipHopReleasedIn$year.m3u'
+          query: ['genre:"Hip Hop"', 'year::201(0|9)']
+        - name: beatles.m3u
+          query: 'artist:Beatles'
+
+spotify:
+    source_weight: 0.5
+    region_filter: US
+    mode: open # optional open sends a link to browser to open spotify with playlist created. can be list send a list of links
+    show_failures: yes
+    tiebreak: first
+
+the:    # The the plugin allows you to move patterns in path formats https://beets.readthedocs.io/en/stable/plugins/the.html
+    # removed from plugins: since not using currently
+    a: no
+    the: no
+    # patterns: [] # causes issues if no patterns defined..
+    strip: no
+    format: '{0} {1}'
+
+ui:
+    color: yes
+    colors:
+        text_success: green
+        text_warning: yellow
+        text_error: red
+        text_highlight: red
+        text_highlight_minor: lightgray
+        action_default: turquoise
+        action: blue
+
+web:
+    host: 0.0.0.0
+    port: 8337
+
+# The below plugin is outdated, tried to force to work with a few bash commands automated, just wouldn't work.
+# wlg:  # whatlastgenre allows you to tag multiple genres from different sources. Some sources only have 1 genre to choose from, like to show up in a few other playlists
+#     auto: no
+#     force: no
+#     count: 5
+#     separator: ', '
+#     whitelist: beets    # can be wlg, beets, or path beets uses whitelist dfined in lastgenre plugin
